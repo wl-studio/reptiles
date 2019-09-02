@@ -1,10 +1,6 @@
 const puppeteer = require('puppeteer');
-const uploadToken = require('./qiniu');
-const qiniu = require('qiniu');
+const toUploadQiniu = require('./qiniu');
 const { addFood, addCatalog } = require('./mysql');
-const fs = require('fs');
-const path = require('path');
-const http = require('http');
 
 const url = 'http://www.boohee.com';
 
@@ -42,50 +38,6 @@ async function toName() {
       .html();
   }
   return { arr: ry, maxPage };
-}
-
-// 上传图片到七牛云
-async function toUploadQiniu(image_name) {
-  await http.get(image_name, async function(res) {
-    let chunks = [];
-    let size = 0;
-    await res.on('data', chunk => {
-      chunks.push(chunk);
-      size += chunk.length;
-    });
-    await res.on('end', async err => {
-      const BufferImage = Buffer.concat(chunks, size).toString('base64');
-      let base64Pre =
-        'data:image/' + path.extname(image_name).substring(1) + ';base64,';
-      let base64Img = base64Pre + BufferImage;
-      var putExtra = new qiniu.form_up.PutExtra();
-      var config = new qiniu.conf.Config();
-      config.zone = qiniu.zone.Zone_z2; // 空间对应的机房
-      var formUploader = new qiniu.form_up.FormUploader(config);
-      const isImage = image_name.split('/');
-      var key = isImage[isImage.length - 1];
-      const pathUrl = `./${key}`;
-      var base64Data = base64Img.replace(/^data:image\/\w+;base64,/, '');
-      var dataBuffer = Buffer.from(base64Data, 'base64');
-      await fs.writeFileSync(pathUrl, dataBuffer);
-      await formUploader.putFile(
-        uploadToken,
-        `food/${key}`,
-        pathUrl,
-        putExtra,
-        function(respErr, respBody, respInfo) {
-          if (respErr) {
-            throw respErr;
-          }
-          if (respInfo.statusCode == 200) {
-            fs.unlinkSync(pathUrl);
-          } else {
-            console.log(失败, pathUrl);
-          }
-        }
-      );
-    });
-  });
 }
 
 (async () => {
