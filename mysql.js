@@ -19,7 +19,7 @@ connection.connect();
 //   `catalog_id` VARCHAR(45) NULL,
 //   PRIMARY KEY (`id`));
 var addSql =
-  'INSERT INTO foods(id,food_name,food_cal,food_image,catalog_id) VALUES(?,?,?,?,?)';
+  'INSERT INTO foods(food_name,food_cal,food_image,catalog_id) VALUES(?,?,?,?)';
 
 // select * from cal.catalog;
 // drop table cal.catalog;
@@ -27,7 +27,7 @@ var addSql =
 //   `id` INT NOT NULL,
 //   `name` VARCHAR(45) NULL,
 //   PRIMARY KEY (`id`));
-const addCatalog = 'INSERT INTO catalog(id,name) VALUES(?,?)';
+const addCatalog = 'INSERT INTO catalog(name) VALUES(?)';
 
 module.exports = {
   addFood: params =>

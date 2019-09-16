@@ -60,39 +60,40 @@ async function toName() {
     }
     return ry;
   });
+  console.log();
 
-  const foods = [];
-  let id = -1;
+  // const foods = [];
+  // let id = -1;
 
-  for (const k in list) {
-    const item = list[k];
-    await page.goto(`${url}${item.href}`);
-    const res = await page.evaluate(toName);
+  // for (const k in list) {
+  //   const item = list[k];
+  //   await page.goto(`${url}${item.href}`);
+  //   const res = await page.evaluate(toName);
 
-    let obj = {
-      name: item.name,
-      id: k,
-      food: res.arr
-    };
-    // 添加分类到数据库
-    await addCatalog([k, item.name]);
-    for (let index = 2; index <= res.maxPage; index++) {
-      await page.waitFor(800);
-      await page.goto(`${url}${item.href}?page=${index}`);
-      const result = await page.evaluate(toName);
-      obj.food = [...obj.food, ...result.arr];
-    }
-    for (let index in obj.food) {
-      const it = obj.food[index];
-      id += 1;
-      // 上传图片到七牛云
-      await toUploadQiniu(it.image_name);
-      const isImage = it.image_name.split('/');
-      // 添加食物到数据库
-      await addFood([id, it.name, it.cal, isImage[isImage.length - 1], k]);
-    }
-    foods.push(obj);
-  }
+  //   let obj = {
+  //     name: item.name,
+  //     id: k,
+  //     food: res.arr
+  //   };
+  //   // 添加分类到数据库
+  //   await addCatalog([k, item.name]);
+  //   for (let index = 2; index <= res.maxPage; index++) {
+  //     await page.waitFor(800);
+  //     await page.goto(`${url}${item.href}?page=${index}`);
+  //     const result = await page.evaluate(toName);
+  //     obj.food = [...obj.food, ...result.arr];
+  //   }
+  //   for (let index in obj.food) {
+  //     const it = obj.food[index];
+  //     id += 1;
+  //     // 上传图片到七牛云
+  //     // await toUploadQiniu(it.image_name);
+  //     const isImage = it.image_name.split('/');
+  //     // 添加食物到数据库
+  //     await addFood([id, it.name, it.cal, isImage[isImage.length - 1], k]);
+  //   }
+  //   foods.push(obj);
+  // }
 
   browser.close();
   process.exit(0);
