@@ -19,7 +19,7 @@ connection.connect();
 //   `catalog_id` VARCHAR(45) NULL,
 //   PRIMARY KEY (`id`));
 var addSql =
-  'INSERT INTO foods(food_name,food_cal,food_image,catalog_id) VALUES(?,?,?,?)';
+  'INSERT INTO foods(food_name,food_unit,food_cal,food_image,catalog_id) VALUES(?,?,?,?,?)';
 
 // select * from cal.catalog;
 // drop table cal.catalog;
@@ -30,12 +30,13 @@ var addSql =
 const addCatalog = 'INSERT INTO catalog(name) VALUES(?)';
 
 module.exports = {
-  addFood: params =>
-    connection.query(addSql, params, function(err) {
+  addFood: async params =>
+    await connection.query(addSql, params, function(err) {
       if (err) return console.log('添加食物失败 - ', err.message);
     }),
-  addCatalog: params =>
-    connection.query(addCatalog, params, function(err) {
+  addCatalog: async params => {
+    await connection.query(addCatalog, params, function(err) {
       if (err) return console.log('添加分类失败 - ', err.message);
-    })
+    });
+  }
 };
